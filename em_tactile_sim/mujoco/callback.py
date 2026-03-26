@@ -11,9 +11,7 @@ class EMSensorCallback:
     using Hertz contact mechanics every physics step.
     """
 
-    def __init__(self, model: mujoco.MjModel,
-                       config: SensorConfig,
-                       data: mujoco.MjData = None) -> None:
+    def __init__(self, model: mujoco.MjModel, config: SensorConfig) -> None:
         self._cfg = config
         self._contact_model = ContactModel(config)
 
@@ -61,7 +59,7 @@ class EMSensorCallback:
         """Extract contacts involving sensor_pad, converted to pad-local coords."""
         pad_id = self._pad_geom_id
         pad_pos = data.geom_xpos[pad_id].copy()          # world position of geom
-        pad_mat = data.geom_xmat[pad_id].reshape(3, 3)  # rotation matrix (world←geom)
+        pad_mat = data.geom_xmat[pad_id].copy().reshape(3, 3)  # rotation matrix (world←geom)
 
         contact_force = np.zeros(6, dtype=np.float64)
         contacts = []
@@ -72,18 +70,9 @@ class EMSensorCallback:
                 continue
 
             mujoco.mj_contactForce(model, data, i, contact_force)
-            # Normalize: fn positive = compression on pad.
-            # mj_contactForce returns force on geom1 in contact frame.
-            # Normal direction points from geom2 into geom1; fn > 0 is always
-            # repulsive (compression).  Negate when pad is geom2 so that fn
-            # represents compression *on the pad* (reaction force sign).
-            sign = 1.0 if int(c.geom1) == pad_id else -1.0
-            fn  = sign * float(contact_force[0])
-            ftx = sign * float(contact_force[1])
-            fty = sign * float(contact_force[2])
-            # fn < 0 after sign flip can occur when normal convention is
-            # flipped by MuJoCo; take absolute value to ensure compression > 0.
-            fn = abs(fn)
+            fn  = float(contact_force[0])   # always positive for compression
+            ftx = float(contact_force[1])
+            fty = float(contact_force[2])
 
             if fn < self._cfg.sensitivity:
                 continue

@@ -48,6 +48,7 @@ def test_callback_no_contact():
     adr = int(model.sensor_adr[sid])
     sensor_out = data.sensordata[adr: adr + cfg.sensor_dim]
 
+    assert data.ncon == 0
     assert sensor_out.shape == (151,)
     # At t=0 the ball hasn't landed yet — expect zeros (or near-zero)
     assert np.max(np.abs(sensor_out)) < 1e-6
@@ -80,9 +81,10 @@ def test_callback_output_shape_after_contact():
     adr = int(model.sensor_adr[sid])
     sensor_out = data.sensordata[adr: adr + cfg.sensor_dim]
 
+    assert data.ncon > 0, "Expected contact after 200 steps"
     assert sensor_out.shape == (151,)
-    # Ball should have contacted pad — resultant force (indices 147-149) should be non-zero
+    # Ball should have contacted pad — resultant force (indices 147-149) should exceed sensitivity
     resultant = sensor_out[147:150]
-    assert np.max(np.abs(resultant)) > 0.0, "Expected non-zero resultant after contact"
+    assert resultant[0] > cfg.sensitivity, "Expected resultant[0] > sensitivity after contact"
 
     cb.unregister()
