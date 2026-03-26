@@ -12,8 +12,8 @@ class EMSensorCallback:
     """
 
     def __init__(self, model: mujoco.MjModel,
-                       data: mujoco.MjData,
-                       config: SensorConfig) -> None:
+                       config: SensorConfig,
+                       data: mujoco.MjData = None) -> None:
         self._cfg = config
         self._contact_model = ContactModel(config)
 
@@ -23,6 +23,11 @@ class EMSensorCallback:
         if self._sensor_id < 0:
             raise ValueError("Sensor 'EM_SENSOR' not found in model.")
         self._sensor_adr = int(model.sensor_adr[self._sensor_id])
+
+        actual_dim = int(model.sensor_dim[self._sensor_id])
+        if actual_dim != self._cfg.sensor_dim:
+            raise ValueError(
+                f"XML sensor dim {actual_dim} != config sensor_dim {self._cfg.sensor_dim}")
 
         self._pad_geom_id = mujoco.mj_name2id(
             model, mujoco.mjtObj.mjOBJ_GEOM, "sensor_pad")
@@ -40,8 +45,8 @@ class EMSensorCallback:
     def _callback(self, model: mujoco.MjModel,
                         data: mujoco.MjData,
                         stage: int) -> None:
-        # mjcb_sensor is called at multiple stages; sensor data filled at ACT stage
-        if stage != mujoco.mjtStage.mjSTAGE_ACT:
+        # mjcb_sensor is called at multiple stages; sensor data filled at ACC stage
+        if stage != mujoco.mjtStage.mjSTAGE_ACC:
             return
 
         contacts = self._get_pad_contacts(model, data)
@@ -55,9 +60,8 @@ class EMSensorCallback:
                                 data: mujoco.MjData) -> list:
         """Extract contacts involving sensor_pad, converted to pad-local coords."""
         pad_id = self._pad_geom_id
-        pad_body_id = int(model.geom_bodyid[pad_id])
-        pad_pos = data.xpos[pad_body_id].copy()          # world position
-        pad_mat = data.xmat[pad_body_id].reshape(3, 3)  # rotation matrix (world←body)
+        pad_pos = data.geom_xpos[pad_id].copy()          # world position of geom
+        pad_mat = data.geom_xmat[pad_id].reshape(3, 3)  # rotation matrix (world←geom)
 
         contact_force = np.zeros(6, dtype=np.float64)
         contacts = []
@@ -68,9 +72,18 @@ class EMSensorCallback:
                 continue
 
             mujoco.mj_contactForce(model, data, i, contact_force)
-            fn  = float(contact_force[0])        # normal force (positive = compression)
-            ftx = float(contact_force[1])
-            fty = float(contact_force[2])
+            # Normalize: fn positive = compression on pad.
+            # mj_contactForce returns force on geom1 in contact frame.
+            # Normal direction points from geom2 into geom1; fn > 0 is always
+            # repulsive (compression).  Negate when pad is geom2 so that fn
+            # represents compression *on the pad* (reaction force sign).
+            sign = 1.0 if int(c.geom1) == pad_id else -1.0
+            fn  = sign * float(contact_force[0])
+            ftx = sign * float(contact_force[1])
+            fty = sign * float(contact_force[2])
+            # fn < 0 after sign flip can occur when normal convention is
+            # flipped by MuJoCo; take absolute value to ensure compression > 0.
+            fn = abs(fn)
 
             if fn < self._cfg.sensitivity:
                 continue
