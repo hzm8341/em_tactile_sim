@@ -1,0 +1,91 @@
+<mujoco model="em_sensor_flat">
+  <!--
+    标准品规格：7×7 测点，43×28×8mm，120Hz
+    感知区域：6mm×6mm（7点×1mm间距），位于传感器表面中心
+    传感器总输出维度：151（7×7×3=147 + 合力3 + 温度1）
+  -->
+  <option gravity="0 0 -9.81" timestep="0.00833"
+          solver="Newton" integrator="implicit"
+          cone="elliptic" impratio="10"/>
+
+  <default>
+    <geom condim="3" solref="0.01 0.9"
+          solimp="0.9 0.999 0.005" friction="1 0.1 0.01"/>
+  </default>
+
+  <worldbody>
+    <light pos="0 0 1" dir="0 0 -1"/>
+    <geom name="ground" type="plane" size="0.1 0.1 0.01" rgba="0.8 0.8 0.8 1"/>
+
+    <!-- 传感器主体（固定在世界） -->
+    <body name="sensor_body" pos="0 0 0.001">
+      <!-- 感知面：6mm×6mm（7×7 测点覆盖区域），厚度 1mm -->
+      <geom name="sensor_pad" type="box"
+            size="0.003 0.003 0.001"
+            rgba="0.2 0.6 0.9 0.8" mass="0.05"/>
+      <site name="cell_0_0" pos="-0.003000 -0.003000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_0_1" pos="-0.002000 -0.003000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_0_2" pos="-0.001000 -0.003000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_0_3" pos="0.000000 -0.003000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_0_4" pos="0.001000 -0.003000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_0_5" pos="0.002000 -0.003000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_0_6" pos="0.003000 -0.003000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_1_0" pos="-0.003000 -0.002000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_1_1" pos="-0.002000 -0.002000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_1_2" pos="-0.001000 -0.002000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_1_3" pos="0.000000 -0.002000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_1_4" pos="0.001000 -0.002000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_1_5" pos="0.002000 -0.002000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_1_6" pos="0.003000 -0.002000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_2_0" pos="-0.003000 -0.001000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_2_1" pos="-0.002000 -0.001000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_2_2" pos="-0.001000 -0.001000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_2_3" pos="0.000000 -0.001000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_2_4" pos="0.001000 -0.001000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_2_5" pos="0.002000 -0.001000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_2_6" pos="0.003000 -0.001000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_3_0" pos="-0.003000 0.000000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_3_1" pos="-0.002000 0.000000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_3_2" pos="-0.001000 0.000000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_3_3" pos="0.000000 0.000000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_3_4" pos="0.001000 0.000000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_3_5" pos="0.002000 0.000000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_3_6" pos="0.003000 0.000000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_4_0" pos="-0.003000 0.001000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_4_1" pos="-0.002000 0.001000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_4_2" pos="-0.001000 0.001000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_4_3" pos="0.000000 0.001000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_4_4" pos="0.001000 0.001000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_4_5" pos="0.002000 0.001000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_4_6" pos="0.003000 0.001000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_5_0" pos="-0.003000 0.002000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_5_1" pos="-0.002000 0.002000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_5_2" pos="-0.001000 0.002000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_5_3" pos="0.000000 0.002000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_5_4" pos="0.001000 0.002000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_5_5" pos="0.002000 0.002000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_5_6" pos="0.003000 0.002000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_6_0" pos="-0.003000 0.003000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_6_1" pos="-0.002000 0.003000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_6_2" pos="-0.001000 0.003000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_6_3" pos="0.000000 0.003000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_6_4" pos="0.001000 0.003000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_6_5" pos="0.002000 0.003000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+      <site name="cell_6_6" pos="0.003000 0.003000 0.001500" size="0.0003" rgba="1 0.5 0 0.8"/>
+    </body>
+
+    <!-- 测试用自由落体球（半径 5mm，质量 10g） -->
+    <body name="ball" pos="0 0 0.05">
+      <joint name="ball_joint" type="free"/>
+      <geom name="ball_geom" type="sphere" size="0.005"
+            mass="0.01" rgba="1 0.3 0.3 1"/>
+    </body>
+  </worldbody>
+
+  <sensor>
+    <!-- 151 维用户传感器：由 EMSensorCallback 的 mjcb_sensor 回调填充 -->
+    <!-- dim = 7*7*3 + 3 + 1 = 151 -->
+    <user name="EM_SENSOR" dim="151"
+          objtype="geom" objname="sensor_pad"/>
+  </sensor>
+</mujoco>
