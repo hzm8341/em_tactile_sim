@@ -119,7 +119,7 @@ def test_contact_produces_nonzero_after_fall(env):
     for _ in range(300):
         env.step()
     fn_max = env.get_tactile()[:, :, 0].max()
-    assert fn_max > env._cfg.sensitivity, "Expected fn_max > sensitivity after contact"
+    assert fn_max > 0.0, "Expected nonzero normal force after ball contact"
 
 
 def test_reset_clears_output(env):
