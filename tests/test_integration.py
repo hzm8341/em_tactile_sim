@@ -83,8 +83,8 @@ def test_callback_output_shape_after_contact():
 
     assert data.ncon > 0, "Expected contact after 200 steps"
     assert sensor_out.shape == (151,)
-    # Ball should have contacted pad — resultant force (indices 147-149) should exceed sensitivity
-    resultant = sensor_out[147:150]
+    # Ball should have contacted pad — resultant force (cfg.array_dim to +3) should exceed sensitivity
+    resultant = sensor_out[cfg.array_dim: cfg.array_dim + 3]
     assert resultant[0] > cfg.sensitivity, "Expected resultant[0] > sensitivity after contact"
 
     cb.unregister()
