@@ -32,6 +32,11 @@ class EMSensorCallback:
         if self._pad_geom_id < 0:
             raise ValueError("Geom 'sensor_pad' not found in model.")
 
+    @property
+    def sensor_adr(self) -> int:
+        """Byte offset of EM_SENSOR data in sensordata array."""
+        return self._sensor_adr
+
     def register(self) -> None:
         """Register this callback with MuJoCo. Call once after MjData is created."""
         mujoco.set_mjcb_sensor(self._callback)

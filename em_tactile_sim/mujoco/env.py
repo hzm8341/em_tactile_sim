@@ -46,23 +46,23 @@ class EMTactileEnv:
 
     def get_tactile(self) -> np.ndarray:
         """Array distributed force. Shape: (rows, cols, 3) -> [fn, ftx, fty] in N."""
-        adr = self._cb._sensor_adr
+        adr = self._cb.sensor_adr
         return self._data.sensordata[adr: adr + self._cfg.array_dim].reshape(
             self._cfg.rows, self._cfg.cols, 3).copy()
 
     def get_resultant(self) -> np.ndarray:
         """3D resultant force [Fx, Fy, Fz] in N. Shape: (3,)."""
-        adr = self._cb._sensor_adr + self._cfg.array_dim
+        adr = self._cb.sensor_adr + self._cfg.array_dim
         return self._data.sensordata[adr: adr + 3].copy()
 
     def get_temperature(self) -> float:
         """Temperature in degrees C (Phase 1 always returns 0.0)."""
-        adr = self._cb._sensor_adr + self._cfg.array_dim + 3
+        adr = self._cb.sensor_adr + self._cfg.array_dim + 3
         return float(self._data.sensordata[adr])
 
     def get_tactile_flat(self) -> np.ndarray:
         """Full sensor output vector. Shape: (sensor_dim,) = (151,)."""
-        adr = self._cb._sensor_adr
+        adr = self._cb.sensor_adr
         return self._data.sensordata[adr: adr + self._cfg.sensor_dim].copy()
 
     # ------------------------------------------------------------------

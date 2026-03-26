@@ -17,7 +17,9 @@ XML = os.path.join(
 @pytest.fixture
 def env():
     cfg = SensorConfig()
-    return EMTactileEnv(XML, cfg)
+    e = EMTactileEnv(XML, cfg)
+    yield e
+    e.close()
 
 
 def test_import_callback():
@@ -101,8 +103,7 @@ def test_output_shapes_after_step(env):
     env.step()
     assert env.get_tactile().shape      == (7, 7, 3)
     assert env.get_resultant().shape    == (3,)
-    assert env.get_tactile_flat().shape == (151,)
-    env.close()
+    assert env.get_tactile_flat().shape == (env._cfg.sensor_dim,)
 
 
 def test_no_contact_zero_output(env):
@@ -111,7 +112,6 @@ def test_no_contact_zero_output(env):
     tactile = env.get_tactile()
     # fn channel should be 0 (ball hasn't fallen yet)
     np.testing.assert_array_almost_equal(tactile[:, :, 0], 0.0)
-    env.close()
 
 
 def test_contact_produces_nonzero_after_fall(env):
@@ -119,8 +119,7 @@ def test_contact_produces_nonzero_after_fall(env):
     for _ in range(300):
         env.step()
     fn_max = env.get_tactile()[:, :, 0].max()
-    assert fn_max > 0.0, "Expected nonzero normal force after ball contact"
-    env.close()
+    assert fn_max > env._cfg.sensitivity, "Expected fn_max > sensitivity after contact"
 
 
 def test_reset_clears_output(env):
@@ -130,10 +129,8 @@ def test_reset_clears_output(env):
     env.step()
     fn_max = env.get_tactile()[:, :, 0].max()
     assert fn_max == pytest.approx(0.0, abs=1e-6)
-    env.close()
 
 
 def test_get_temperature_default(env):
     env.step()
     assert env.get_temperature() == pytest.approx(0.0)
-    env.close()
