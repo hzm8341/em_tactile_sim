@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "em-tactile-sim"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "mujoco>=3.0.0",
+    "numpy>=1.24",
+    "matplotlib>=3.7",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+calibration = [
+    "torch>=2.0",
+    "scipy>=1.10",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["em_tactile_sim*"]
