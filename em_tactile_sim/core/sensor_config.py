@@ -1,3 +1,8 @@
+"""Sensor configuration dataclass and variants for the EM tactile sensor simulation.
+
+Defines physical and electrical parameters for both STANDARD (7×7, 43×28×8mm)
+and CUSTOM1 (6×6, 20×17×9mm) sensor configurations.
+"""
 from dataclasses import dataclass
 from enum import Enum
 import numpy as np
@@ -10,6 +15,12 @@ class SensorVariant(Enum):
 
 @dataclass
 class SensorConfig:
+    """Configuration parameters for the 元触科技 electromagnetic tactile sensor.
+
+    Supports two physical variants (STANDARD and CUSTOM1). Use SensorVariant
+    to select the variant; __post_init__ applies variant-specific overrides.
+    All dimensional fields are in SI units (m, N, Pa, Hz).
+    """
     variant: SensorVariant = SensorVariant.STANDARD
 
     # Array geometry
@@ -51,14 +62,17 @@ class SensorConfig:
 
     @property
     def array_dim(self) -> int:
+        """Dimension of flattened array output: rows * cols * 3 force channels."""
         return self.rows * self.cols * 3
 
     @property
     def sensing_span_x(self) -> float:
+        """Width of sensing area in X direction, m: (cols-1) * cell_spacing."""
         return (self.cols - 1) * self.cell_spacing
 
     @property
     def sensing_span_y(self) -> float:
+        """Height of sensing area in Y direction, m: (rows-1) * cell_spacing."""
         return (self.rows - 1) * self.cell_spacing
 
     @property
@@ -73,4 +87,5 @@ class SensorConfig:
 
     @property
     def cell_area(self) -> float:
+        """Area of one sensing cell, m²: cell_spacing²."""
         return self.cell_spacing ** 2
