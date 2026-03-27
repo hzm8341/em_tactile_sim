@@ -47,6 +47,9 @@ class SensorConfig:
     # Hall mapping (Phase 1: unity, Phase 4: calibrated)
     hall_sensitivity: float = 1.0
 
+    # MuJoCo sensor name (must match the <sensor><user name=...> in the XML)
+    sensor_name: str = "EM_SENSOR"
+
     def __post_init__(self) -> None:
         if self.variant == SensorVariant.CUSTOM1:
             self.rows           = 6
@@ -54,6 +57,7 @@ class SensorConfig:
             self.product_length = 20e-3
             self.product_width  = 17e-3
             self.product_height = 9e-3
+            self.sensor_name    = "EM_SENSOR_CUSTOM1"
 
     @property
     def sensor_dim(self) -> int:

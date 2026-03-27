@@ -17,9 +17,9 @@ class EMSensorCallback:
 
         # Resolve IDs once at construction
         self._sensor_id = mujoco.mj_name2id(
-            model, mujoco.mjtObj.mjOBJ_SENSOR, "EM_SENSOR")
+            model, mujoco.mjtObj.mjOBJ_SENSOR, config.sensor_name)
         if self._sensor_id < 0:
-            raise ValueError("Sensor 'EM_SENSOR' not found in model.")
+            raise ValueError(f"Sensor '{config.sensor_name}' not found in model.")
         self._sensor_adr = int(model.sensor_adr[self._sensor_id])
 
         actual_dim = int(model.sensor_dim[self._sensor_id])
