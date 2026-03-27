@@ -77,8 +77,9 @@ class EMTactileIsaacEnv:
 
     def reset(self) -> None:
         """Reset simulation to initial state."""
-        if self._world is not None:
-            self._world.reset()
+        if self._world is None:
+            raise RuntimeError("Call setup() before reset().")
+        self._world.reset()
 
     def close(self) -> None:
         """Shutdown Isaac Sim world."""
@@ -90,14 +91,16 @@ class EMTactileIsaacEnv:
 
     def get_tactile(self) -> np.ndarray:
         """Array distributed force. Shape: (rows, cols, 3)  → [fn, ftx, fty] in N."""
+        # bridge.output already returns a copy; reshape returns a view of that copy.
         return self._bridge.output[:self._cfg.array_dim].reshape(
             self._cfg.rows, self._cfg.cols, 3
-        ).copy()
+        )
 
     def get_resultant(self) -> np.ndarray:
         """Resultant force [Fn_sum, Ftx_sum, Fty_sum] in N. Shape: (3,)."""
+        # bridge.output already returns a copy.
         out = self._bridge.output
-        return out[self._cfg.array_dim: self._cfg.array_dim + 3].copy()
+        return out[self._cfg.array_dim: self._cfg.array_dim + 3]
 
     def get_temperature(self) -> float:
         """Temperature in °C (Phase 2: always 0.0)."""
