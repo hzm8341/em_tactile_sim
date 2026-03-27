@@ -180,37 +180,60 @@ EOF
 
 ---
 
-## 三、Isaac Sim 集成（Phase 2，开发中）
+## 三、Isaac Sim 集成（Phase 2）
 
-> Phase 2 正在开发，本节将随实现进度持续更新。
-
-### 3.1 当前状态
-
-`isaac/` 目录功能正在实现中，预计包含：
+### 3.1 模块结构
 
 ```
 em_tactile_sim/isaac/
-├── models/
-│   └── em_sensor_flat.usd      # 传感器 USD 资产
-├── sensor_callback.py           # PhysX 接触 → core 层转换
-└── env.py                       # EMTactileIsaacEnv，与 MuJoCo env 接口对齐
+├── _compat.py           # 版本检测（4.5.0 / 5.0.0）
+├── contact_source.py    # ContactSource ABC + RigidContactViewSource
+├── sensor_bridge.py     # 接触数据 → core 层转换
+├── env.py               # EMTactileIsaacEnv，与 MuJoCo env 接口相同
+├── extension.py         # IExt UI 壳（7×7 热力图 + 合力显示）
+└── models/
+    └── em_sensor_flat.usda  # USD 传感器资产
 ```
 
-### 3.2 Phase 2 计划架构
-
-**core 层完全复用**，只需替换接触数据读取方式：
-
-| 模块 | MuJoCo (Phase 1) | Isaac Sim (Phase 2) |
-|------|-----------------|---------------------|
-| 接触读取 | `mujoco.mj_contactForce` | `RigidContactView` PhysX API |
-| 回调注册 | `set_mjcb_sensor` | `world.add_physics_callback` |
-| 输出格式 | `data.sensordata` | numpy buffer（相同接口） |
-| 可视化 | matplotlib | rerun / OmniGraph |
-
-### 3.3 Isaac Sim 环境检测
+### 3.2 独立 Python 脚本（需 Isaac Sim Python 解释器）
 
 ```bash
-python3 -c "import isaacsim; print('Isaac Sim available')" 2>&1
+# Isaac Sim 4.5.0
+~/.local/share/ov/pkg/isaac-sim-4.5.0/python.sh examples/isaac_press_test.py
+
+# Isaac Sim 5.0.0
+~/.local/share/ov/pkg/isaac-sim-5.0.0/python.sh examples/isaac_press_test.py
+```
+
+### 3.3 Extension（图形界面插件）
+
+在 Isaac Sim 中加载 Extension：
+
+1. 打开 Isaac Sim → **Window → Extensions**
+2. 点击 **+** → 指定路径：`em_tactile_sim/isaac/`
+3. 启用 `EMTactileExtension` → UI 面板弹出
+4. 点击 **Step** / **Reset** 控制仿真，7×7 法向力热力图实时更新
+
+### 3.4 API 用法（与 MuJoCo 接口一致）
+
+```python
+from em_tactile_sim.core.sensor_config import SensorConfig
+from em_tactile_sim.isaac.env import EMTactileIsaacEnv
+
+cfg = SensorConfig()
+env = EMTactileIsaacEnv("em_tactile_sim/isaac/models/em_sensor_flat.usda", cfg)
+env.setup()
+env.step()
+
+tactile   = env.get_tactile()      # (7, 7, 3) — 与 MuJoCo 完全相同
+resultant = env.get_resultant()    # (3,) [Fn_sum, Ftx_sum, Fty_sum]
+env.close()
+```
+
+### 3.5 检测 Isaac Sim 是否可用
+
+```bash
+python3 -c "from em_tactile_sim.isaac import is_isaac_available; print(is_isaac_available())"
 ```
 
 ---
