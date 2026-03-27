@@ -47,7 +47,9 @@ def test_bridge_fn_clamped_to_range():
     bridge.update()
     out = bridge.output
     assert np.all(out >= 0.0)
-    assert np.all(out <= cfg.fn_max * cfg.hall_sensitivity * 10)  # generous upper bound
+    # Each element ≤ fn_max * hall_sensitivity: Hertz model distributes force across cells,
+    # so no single cell or resultant component can exceed total contact force × sensitivity.
+    assert np.all(out <= cfg.fn_max * cfg.hall_sensitivity)
 
 
 def test_bridge_update_idempotent():
