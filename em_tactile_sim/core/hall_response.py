@@ -25,7 +25,7 @@ def compute_output(force_array: np.ndarray,
     # Phase 1: linear Hall mapping
     array_out = force_array * config.hall_sensitivity    # (rows, cols, 3)
 
-    # 3D resultant: sum over all cells
+    # Resultant in sensor-local frame: [Fn_sum, Ftx_sum, Fty_sum]
     resultant = array_out.sum(axis=(0, 1))               # (3,)
 
     # Temperature (Phase 1: pass-through)

@@ -51,7 +51,13 @@ class EMTactileEnv:
             self._cfg.rows, self._cfg.cols, 3).copy()
 
     def get_resultant(self) -> np.ndarray:
-        """3D resultant force [Fx, Fy, Fz] in N. Shape: (3,)."""
+        """Resultant force in sensor-local frame [Fn_sum, Ftx_sum, Fty_sum] in N. Shape: (3,).
+
+        Components are sums of per-cell forces across all 7×7 cells:
+          index 0: Fn_sum  — total normal force (sensor Z axis, compression > 0)
+          index 1: Ftx_sum — total tangential force along sensor X axis
+          index 2: Fty_sum — total tangential force along sensor Y axis
+        """
         adr = self._cb.sensor_adr + self._cfg.array_dim
         return self._data.sensordata[adr: adr + 3].copy()
 

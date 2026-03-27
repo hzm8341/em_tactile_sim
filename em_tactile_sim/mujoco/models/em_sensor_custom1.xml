@@ -1,0 +1,44 @@
+<mujoco model="em_sensor_custom1">
+  <!--
+    定制品1（指尖型）规格：6×6 测点，20mm × 17mm × 9mm，120Hz
+    感知区域：5mm×5mm（6点×1mm间距），位于传感器表面中心
+    传感器总输出维度：112（6×6×3=108 + 合力3 + 温度1）
+    通信接口：CAN（仅注释说明，不影响仿真）
+  -->
+  <option gravity="0 0 -9.81" timestep="0.00833"
+          solver="Newton" integrator="implicit"
+          cone="elliptic" impratio="10"/>
+
+  <default>
+    <geom condim="3" solref="0.01 0.9"
+          solimp="0.9 0.999 0.005" friction="1 0.1 0.01"/>
+  </default>
+
+  <worldbody>
+    <light pos="0 0 1" dir="0 0 -1"/>
+    <geom name="ground" type="plane" size="0.1 0.1 0.01" rgba="0.8 0.8 0.8 1"/>
+
+    <!-- 传感器主体（固定在世界） -->
+    <body name="sensor_body" pos="0 0 0.001">
+      <!-- 感知面：5mm×5mm（6×6 测点覆盖区域），厚度 1mm -->
+      <geom name="sensor_pad" type="box"
+            size="0.0025 0.0025 0.001"
+            rgba="0.2 0.6 0.9 0.8" mass="0.05"/>
+      <!-- 36 个 cell site（gen_sites.py 生成后插入此处，仅可视化） -->
+    </body>
+
+    <!-- 测试用自由落体球（半径 5mm，质量 10g） -->
+    <body name="ball" pos="0 0 0.05">
+      <joint name="ball_joint" type="free"/>
+      <geom name="ball_geom" type="sphere" size="0.005"
+            mass="0.01" rgba="1 0.3 0.3 1"/>
+    </body>
+  </worldbody>
+
+  <sensor>
+    <!-- 112 维用户传感器：由 EMSensorCallback 的 mjcb_sensor 回调填充 -->
+    <!-- dim = 6*6*3 + 3 + 1 = 112 -->
+    <user name="EM_SENSOR_CUSTOM1" dim="112"
+          objtype="geom" objname="sensor_pad"/>
+  </sensor>
+</mujoco>
