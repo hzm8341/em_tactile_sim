@@ -1,0 +1,62 @@
+#usda 1.0
+(
+    """
+    EM Tactile Sensor — Standard (7x7, 43x28x8mm)
+    Sensing area: 6x6mm  (7 cells x 1mm spacing)
+    Equivalent of em_sensor_flat.xml for Isaac Sim.
+    """
+    defaultPrim = "World"
+    metersPerUnit = 1.0
+    upAxis = "Z"
+)
+
+def Xform "World"
+{
+    # Physics scene
+    def PhysicsScene "physicsScene"
+    {
+        vector3f physics:gravityDirection = (0, 0, -1)
+        float physics:gravityMagnitude = 9.81
+    }
+
+    # Ground plane
+    def Plane "groundPlane"
+    {
+        uniform token axis = "Z"
+        bool physics:collisionEnabled = true
+    }
+
+    # Sensor body (fixed)
+    def Xform "sensor_body"
+    {
+        double3 xformOp:translate = (0, 0, 0.001)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+
+        def Cube "sensor_pad"
+        {
+            # Half-extents: 3mm x 3mm x 1mm  (sensing area 6mm x 6mm, depth 2mm)
+            double size = 1.0
+            float3 xformOp:scale = (0.003, 0.003, 0.001)
+            uniform token[] xformOpOrder = ["xformOp:scale"]
+
+            bool physics:collisionEnabled = true
+            bool physics:rigidBodyEnabled = false
+
+            float3 primvars:displayColor = (0.2, 0.6, 0.9)
+        }
+    }
+
+    # Test object: free-falling sphere (r=5mm, m=10g)
+    def Sphere "ball"
+    {
+        double radius = 0.005
+        double3 xformOp:translate = (0, 0, 0.05)
+        uniform token[] xformOpOrder = ["xformOp:translate"]
+
+        bool physics:collisionEnabled = true
+        bool physics:rigidBodyEnabled = true
+        float physics:mass = 0.01
+
+        float3 primvars:displayColor = (1.0, 0.3, 0.3)
+    }
+}
