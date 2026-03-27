@@ -36,9 +36,14 @@ def get_rigid_contact_view_class():
 
 
 def get_world_class():
-    """Return World class for the installed Isaac Sim version."""
+    """Return World class for the installed Isaac Sim version.
+
+    Raises RuntimeError if Isaac Sim is not available or version unsupported.
+    """
     version = get_isaac_version()
     if version in ("4.5.0", "5.0.0"):
         from isaacsim.core.api import World  # type: ignore[import]
         return World
+    if version is None:
+        raise RuntimeError("Isaac Sim is not installed.")
     raise RuntimeError(f"Unsupported Isaac Sim version: {version!r}")
