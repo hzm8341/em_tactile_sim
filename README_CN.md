@@ -163,6 +163,16 @@ python examples/flat_press_test.py
 python examples/visualize_array.py
 ```
 
+### 交互式仪表盘
+
+触觉传感器数据可视化交互式仪表盘，支持时序图和实时更新。
+
+![交互式仪表盘](examples/download.png)
+
+```bash
+python3 examples/interactive_dashboard.py
+```
+
 ---
 
 ## API 参考
