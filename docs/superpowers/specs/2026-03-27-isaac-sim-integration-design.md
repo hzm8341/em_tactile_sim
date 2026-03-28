@@ -212,7 +212,10 @@ class EMTactileExtension(omni.ext.IExt):
         self._window = None
 
     def _build_ui(self) -> None:
-        # omni.ui：Step / Reset 按钮，传感器数值实时显示
+        # omni.ui：
+        #   - Step / Reset 按钮
+        #   - 合力三分量数值显示（Fn_sum, Ftx_sum, Fty_sum）
+        #   - 7×7 法向力热力图（FloatField 网格，颜色映射 0~20N）
         ...
 ```
 
@@ -346,4 +349,4 @@ env.close()
 | Q1 | `RigidContactView` 在 5.0.0 中 import 路径是否有变化？ | 待验证 |
 | Q2 | USD 文件手工编写 vs Isaac Sim 内置转换工具？ | Phase 2 实现时决定 |
 | Q3 | rerun 集成：`rr.log` 调用频率是否需要节流（每 N 步记录一次）？ | 待设计 |
-| Q4 | Extension UI：是否需要 7×7 热力图（omni.ui）还是只显示合力数值？ | 待用户确认 |
+| Q4 | Extension UI：是否需要 7×7 热力图（omni.ui）还是只显示合力数值？ | **已决策：需要 7×7 热力图**，用 omni.ui FloatField 网格或 ImageWithProvider 实现 |

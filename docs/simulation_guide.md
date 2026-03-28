@@ -11,12 +11,22 @@
 
 | 包 | 版本 |
 |----|------|
-| Python | ≥ 3.10 |
+| Python | 3.10 |
 | mujoco | 3.6.0 |
 | numpy | 2.2.6 |
 | matplotlib | 3.10.8 |
 
-### 1.2 安装包
+### 1.2 创建 Conda 环境
+
+```bash
+# 创建专用环境（Python 3.10）
+conda create -n tactisim python=3.10 -y
+
+# 激活环境
+conda activate tactisim
+```
+
+### 1.3 安装包
 
 ```bash
 cd /media/hzm/data_disk/tactiSim_all/em_tactile_sim
@@ -27,6 +37,8 @@ pip install -e ".[dev]"
 # 验证安装
 python3 -c "import em_tactile_sim; print('OK')"
 ```
+
+> **注意**：后续所有命令均在 `conda activate tactisim` 环境下执行。
 
 ---
 
