@@ -163,6 +163,16 @@ Renders a live 7×7 force heatmap using matplotlib.
 python examples/visualize_array.py
 ```
 
+### Interactive Dashboard
+
+Interactive dashboard for tactile sensor data visualization with time-series plots and real-time updates.
+
+![Interactive Dashboard](examples/download.png)
+
+```bash
+python3 examples/interactive_dashboard.py
+```
+
 ---
 
 ## API Reference
